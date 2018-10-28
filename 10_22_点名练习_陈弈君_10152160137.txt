@@ -1,0 +1,14 @@
+Theorem mult_0_l : forall n:nat,  0 * n = 0.
+
+Proof. 
+  intros n. simpl. reflexivity.
+  Qed.
+
+
+Theorem mult_0_r : forall n:nat,  n * 0 = 0.
+
+Proof. 
+  intros n. induction n as [|n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. reflexivity.
+  Qed.

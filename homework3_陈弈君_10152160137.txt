@@ -1,0 +1,138 @@
+(*
+  10152160137 ³ÂÞÄ¾ý
+*)
+(* import definition for natlist*)
+
+
+Inductive natlist : Type :=
+  | nil  : natlist
+  | cons : nat -> natlist -> natlist.
+
+Notation "x :: l" := (cons x l)
+                     (at level 60, right associativity).
+Notation "[ ]" := nil.
+Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
+
+(*************************************************)
+(* 1. Define the membership function ismember such that (ismember n l = true ) iff n is in the list l.*)
+(*************************************************)
+
+Fixpoint beq_nat (n m : nat) : bool :=
+  match n with
+  | O => match m with
+         | O => true
+         | S m' => false
+         end
+  | S n' => match m with
+            | O => false
+            | S m' => beq_nat n' m'
+            end
+  end.
+
+Fixpoint ismember (n: nat) (l : natlist) : bool :=
+  match l with
+  | nil => false
+  | h :: l' => 
+    match beq_nat n h with
+    | true => true
+    | false => ismember n l'
+    end
+   end.
+
+Example ismember_test1 :  ismember 1 [2;1;3] = true.
+
+Proof. reflexivity. Qed.
+
+Example ismember_test2 :  ismember 4 [2;1;3] = false.
+
+Proof. reflexivity. Qed.
+
+(*************************************************)
+(* 2. Define the function count such that (count n l) gives the number of occurrences of n in l. *)
+(*************************************************)
+
+Fixpoint length (l:natlist) : nat :=
+  match l with
+  | nil => O
+  | h :: t => S (length t)
+  end.
+
+Fixpoint count_pre (n : nat)(l : natlist) : natlist :=
+  match l with
+  | nil => nil
+  | h :: l' => match beq_nat n h with
+               | true => h :: count_pre n l'
+               | false => count_pre n l'
+               end
+  end.
+
+Fixpoint count (n: nat) (l : natlist) : nat := 
+  length (count_pre n l).
+
+Example test_count1: count 1 [1;2;3;1;4;1] = 3. 
+
+Proof. reflexivity. Qed.
+
+Example test_count2: count 6 [1;2;3;1;4;1] = 0. 
+
+Proof. reflexivity. Qed.
+
+(*************************************************)
+(* 3. Define the function max that returns the largest element in the list l.*)
+(*************************************************)
+
+Fixpoint leb (n m : nat) : bool :=
+  match n with
+  | O => true
+  | S n' =>
+      match m with
+      | O => false
+      | S m' => leb n' m'
+      end
+  end.
+
+Fixpoint max (l:natlist) : nat := 
+  match l with
+  | nil => O
+  | h :: l' => match leb h (max(l')) with
+               | true => max l'
+               | false => h
+               end
+  end.
+
+Example test_max1: max [1;2;3;1;4;1] = 4. 
+
+Proof. reflexivity. Qed.
+
+(*************************************************)
+(* 4. Find the first element of l that is less than or equal to n and insert n in front of it. *)
+(*************************************************)
+
+Fixpoint insert (n : nat)(l : natlist) : natlist :=
+  match l with
+     | nil => n :: nil
+     | h :: l' => 
+         match (leb h n) with
+           | true => n :: l
+           | false => h :: insert n l'
+         end
+  end.
+
+
+Example test_insert : insert 5 [6;6;4;1;3] = [6;6;5;4;1;3]. 
+
+Proof. simpl. reflexivity. Qed.
+
+(*************************************************)
+(* 5. Given a list l, sort it in descending order.*)
+(*************************************************)
+
+Fixpoint insertion_sort (l:natlist) : natlist := 
+  match l with
+  | nil => nil
+  | h :: l' => insert h (insertion_sort l')
+  end.
+
+Example test_insertion_sort : insertion_sort [2;4;1;6;9;6;4;1;3;5;10] = [10;9;6;6;5;4;4;3;2;1;1]. 
+
+Proof. reflexivity. Qed.

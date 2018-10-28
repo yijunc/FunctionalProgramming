@@ -380,9 +380,9 @@ Theorem mult_0_plus' : forall n m : nat,
 Proof.
   intros n m.
   assert (H: 0 + n = n). 
-    Case "Proof of assertion". reflexivity.
-  rewrite -> H.
-  reflexivity.  Qed.
+  { reflexivity. }
+  rewrite -> H. reflexivity.
+  Qed.
 
 (** The [assert] tactic introduces two sub-goals.  The first is
     the assertion itself; by prefixing it with [H:] we name the
@@ -684,34 +684,13 @@ Proof.
       reflexivity.
 Qed.
 
+
 Theorem mult_plus_distr_r : forall n m p : nat,
   (n + m) * p = (n * p) + (m * p).
 Proof.
- intros.
-  induction p.
-  (* p == 0 *)
-    rewrite ->  mult_0_r.
-    rewrite ->  mult_0_r.
-    rewrite ->  mult_0_r.
-    simpl.
-    reflexivity.
-  (* p == S p' *)
-    rewrite -> mult_comm.
-    simpl.
-    rewrite -> mult_comm with (n := S p) (m := n).
-    simpl.
-    rewrite -> mult_comm with (n := S p) (m := m).
-    simpl.
-    rewrite -> plus_swap with (n := n+p*n) (m := m) (p := p*m).
-    rewrite -> mult_comm with (n := n) (m := p).
-    rewrite -> mult_comm with (n := m) (m := p).
-    rewrite -> plus_assoc.
-    rewrite -> plus_assoc.
-    rewrite -> plus_comm with (n := m) (m := n).
-    rewrite -> mult_comm with (n := n + m) (m := p).
-    rewrite -> IHp.
-    rewrite -> plus_assoc.
-    reflexivity.
+  intros n m p. induction n as [|n' IHn'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn'. rewrite plus_assoc. reflexivity. 
 Qed.
 
 Theorem mult_assoc : forall n m p : nat,
