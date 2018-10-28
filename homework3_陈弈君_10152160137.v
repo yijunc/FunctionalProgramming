@@ -108,24 +108,31 @@ Proof. reflexivity. Qed.
 (* 4. Find the first element of l that is less than or equal to n and insert n in front of it. *)
 (*************************************************)
 
-Fixpoint insert (n:nat)(l:natlist) : natlist :=  
-
-(*Fill in here*) Admitted.
+Fixpoint insert (n : nat)(l : natlist) : natlist :=
+  match l with
+     | nil => n :: nil
+     | h :: l' => 
+         match (leb h n) with
+           | true => n :: l
+           | false => h :: insert n l'
+         end
+  end.
 
 
 Example test_insert : insert 5 [6;6;4;1;3] = [6;6;5;4;1;3]. 
 
-Proof.  reflexivity. Qed.
+Proof. simpl. reflexivity. Qed.
 
 (*************************************************)
 (* 5. Given a list l, sort it in descending order.*)
 (*************************************************)
 
-
-  
 Fixpoint insertion_sort (l:natlist) : natlist := 
+  match l with
+  | nil => nil
+  | h :: l' => insert h (insertion_sort l')
+  end.
 
-(*Fill in here*) Admitted.
 Example test_insertion_sort : insertion_sort [2;4;1;6;9;6;4;1;3;5;10] = [10;9;6;6;5;4;4;3;2;1;1]. 
 
 Proof. reflexivity. Qed.
