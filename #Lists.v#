@@ -214,6 +214,18 @@ Fixpoint app (l1 l2 : natlist) : natlist :=
 Notation "x ++ y" := (app x y)
                      (right associativity, at level 60).
 
+
+Theorem nil_app_left : forall l, nil ++ l = l.
+Proof. intros l. simpl. reflexivity. Qed.
+
+
+Theorem nil_app_right : forall l, l ++ nil = l.
+Proof.
+  intros l. induction l as [ | x1 l1 IHl1'].
+  - simpl. reflexivity.
+  - simpl. rewrite IHl1'. reflexivity.
+Qed.
+
 Example test_app1:             [1;2;3] ++ [4;5] = [1;2;3;4;5].
 Proof. reflexivity.  Qed.
 Example test_app2:             nil ++ [4;5] = [4;5].
@@ -273,15 +285,24 @@ Proof. reflexivity.  Qed.
 (** Complete the definitions of [nonzeros], [oddmembers] and
     [countoddmembers] below. Have a look at the tests to understand
     what these functions should do. *)
-Check beq_nat
+Check beq_nat.
 
-Fixpoint nonzeros (l:natlist) : natlist
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint nonzeros (l:natlist) : natlist := 
+  match l with
+  | nil => nil
+  | h :: l' => match (beq_nat O h) with
+               | true => nonzeros l'
+               | false => h :: nonzeros l'
+               end
+  end.
+  
 
 Example test_nonzeros:
   nonzeros [0;1;0;2;3;0;0] = [1;2;3].
-  (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
+Check oddb.
+Check evenb.
 Fixpoint oddmembers (l:natlist) : natlist
   (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
