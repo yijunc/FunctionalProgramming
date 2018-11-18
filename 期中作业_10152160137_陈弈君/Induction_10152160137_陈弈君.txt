@@ -1,6 +1,6 @@
 (** * Induction: Proof by Induction *)
 
-(* 10152160137 é™ˆå¼ˆå› *)
+(* 10152160137 ³ÂŞÄ¾ı *)
 
 (** Before getting started, we need to import all of our
     definitions from the previous chapter: *)
