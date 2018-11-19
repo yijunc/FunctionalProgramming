@@ -1073,7 +1073,12 @@ Theorem filter_exercise : forall (X : Type) (test : X -> bool)
      filter test l = x :: lf ->
      test x = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X test x l lf eq.
+  induction l as [|h t IHt].
+  - inversion eq.
+  - simpl in eq. destruct (test h) eqn : TF.
+    + inversion eq. rewrite <- H0. apply TF.
+    + apply IHt. apply eq.
 (** [] *)
 
 (** **** Exercise: 4 stars, advanced, recommended (forall_exists_challenge)  *)
@@ -1106,7 +1111,76 @@ Proof.
     Finally, prove a theorem [existsb_existsb'] stating that
     [existsb'] and [existsb] have the same behavior. *)
 
-(* FILL IN HERE *)
+Fixpoint forallb {X : Type} (p : X -> bool) (lst : list X) : bool :=
+  match lst with
+  | [] => true
+  | x :: xs => andb (p x) (forallb p xs)
+  end.
+
+Example forallb1 : forallb oddb [1;3;5;7;9] = true.
+Proof. simpl. reflexivity. Qed.
+Example forallb2 : forallb negb [false;false] = true.
+Proof. simpl. reflexivity. Qed.
+Example forallb3 : forallb evenb [0;2;4;5] = false.
+Proof. simpl. reflexivity. Qed.
+Example forallb4 : forallb (beq_nat 5) [] = true.
+Proof. simpl. reflexivity. Qed.
+
+
+Fixpoint existsb {X : Type} (p : X -> bool) (lst : list X) : bool :=
+  match lst with
+  | [] => false
+  | x :: xs => orb (p x) (existsb p xs)
+  end.
+
+Example existsb1 : existsb (beq_nat 5) [0;2;3;6] = false.
+Proof. simpl. reflexivity. Qed.
+Example existsb2 : existsb (andb true) [true;true;false] = true.
+Proof. simpl. reflexivity. Qed.
+Example existsb3 : existsb oddb [1;0;0;0;0;3] = true.
+Proof. simpl. reflexivity. Qed.
+Example existsb4 : existsb evenb [] = false.
+Proof. simpl. reflexivity. Qed.
+
+
+Definition existsb' {X : Type} (p : X -> bool) (lst : list X) :=
+  negb (forallb (fun x => negb (p x)) lst).
+
+Theorem or_and : forall (a b : bool), orb a b = negb (andb (negb a) (negb b)).
+Proof.
+  intros. destruct a.
+    - destruct b. 
+      + reflexivity. 
+      + reflexivity.
+    - destruct b. 
+      + reflexivity. 
+      + reflexivity.
+Qed.
+
+Theorem negb_involutive : forall (a : bool), negb (negb a) = a.
+Proof. intros. destruct a. reflexivity. reflexivity. Qed.
+
+Theorem or_and2 : forall (a b : bool), orb a (negb b) = negb (andb (negb a) b).
+Proof.
+  intros. destruct a.
+  - destruct b. 
+    + reflexivity. 
+    + reflexivity.
+  - destruct b. 
+    + reflexivity. 
+    + reflexivity.
+Qed.
+
+Theorem two_exists_is_same : forall (X : Type) (p : X -> bool) (lst : list X)
+                   , existsb p lst = existsb' p lst.
+Proof.
+  intros X p lst. generalize dependent p.
+  induction lst as [|x xs].
+  - simpl. reflexivity.
+  - simpl. unfold existsb'. simpl.
+    intros p. rewrite <- or_and2.
+    apply f_equal. rewrite IHxs. reflexivity.
+Qed.
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_forall_exists_challenge : option (prod nat string) := None.
