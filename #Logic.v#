@@ -794,7 +794,23 @@ Proof.
 Lemma In_app_iff : forall A l l' (a:A),
   In a (l++l') <-> In a l \/ In a l'.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A l l' a. 
+  induction l as [|h t IHt].
+  - simpl. split.
+    + intros H. right. assumption.
+    + intros [[]|H]. assumption.
+  - simpl. split. 
+    + intros [H|H]. 
+      * left; left; apply H.
+      * apply IHt in H. destruct H as [H1|H2].
+        { left; right; apply H1. }
+        { right; apply H2. }
+    + intros [[H|H]|H].
+      * left; apply H.
+      * right. rewrite IHt; left; apply H.
+      * right. rewrite IHt; right; apply H.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, recommended (All)  *)
