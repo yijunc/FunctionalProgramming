@@ -1,7 +1,7 @@
 (** Homework 7
   * 10151590121
   * Zhao Ning
-  * 赵宁
+  * \u8d75\u5b81
   *)
   
 Theorem bool_fn_applied_thrice :
@@ -45,6 +45,6 @@ Proof.
   - destruct m.
     + reflexivity.
     + destruct n.
-      * inversion H.
+      * intuition.
       * inversion H.
 Qed.
