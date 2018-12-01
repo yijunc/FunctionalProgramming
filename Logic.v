@@ -705,7 +705,14 @@ Qed.
 Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
   (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
 Proof.
-   (* FILL IN HERE *) Admitted.
+   intros. split.
+   - intros. inversion H. destruct H0 as [HL | HR].
+     + left. exists x. apply HL.
+     + right. exists x. apply HR.
+   - intros. destruct H as [HL | HR].
+     + inversion HL. exists x. left. apply H.
+     + inversion HR. exists x. right. apply H.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -787,7 +794,24 @@ Lemma In_map_iff :
     In y (map f l) <->
     exists x, f x = y /\ In x l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l as [|h t IHt].
+  - simpl. split.
+    + intros. inversion H.
+    + intros. inversion H. inversion H0. apply H2.
+  - split.
+    + intros [H|H].
+      * exists h. split.
+        -- apply H.
+        -- left. reflexivity.
+      * apply IHt in H. inversion H. exists x. split.
+        -- apply H0.
+        -- right. apply H0.
+    + simpl. intros. inversion H. destruct H0. destruct H1. 
+      * rewrite <- H1 in H0. left. apply H0.
+      * inversion IHt. right. apply H3. exists x. split.
+        -- apply H0.
+        -- apply H1.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (In_app_iff)  *)
@@ -801,7 +825,7 @@ Proof.
     + intros [[]|H]. assumption.
   - simpl. split. 
     + intros [H|H]. 
-      * left; left; apply H.
+      * left. left. apply H.
       * apply IHt in H. destruct H as [H1|H2].
         { left; right; apply H1. }
         { right; apply H2. }
