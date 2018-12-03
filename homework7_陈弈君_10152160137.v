@@ -32,7 +32,7 @@ Proof.
   right. left. apply H1.
 Qed.
 
-
+(* 3 *)
 Example plus_is_O : forall n m, n + m = 0 -> n = 0 /\ m = 0.
 Proof.
   intros m. destruct m as [| m'].

@@ -383,7 +383,9 @@ Proof.
 Fact not_implies_our_not : forall (P:Prop),
   ~ P -> (forall (Q:Prop), P -> Q).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold not in H.
+  apply H in H0. inversion H0.
+Qed.
 (** [] *)
 
 (** This is how we use [not] to state that [0] and [1] are different
@@ -445,7 +447,10 @@ Definition manual_grade_for_double_neg_inf : option (prod nat string) := None.
 Theorem contrapositive : forall (P Q : Prop),
   (P -> Q) -> (~Q -> ~P).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold not in H0. unfold not.
+  intros Hp. apply H in Hp. apply H0 in Hp.
+  inversion Hp.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (not_both_true_and_false)  *)
@@ -572,7 +577,22 @@ Proof.
 Theorem or_distributes_over_and : forall P Q R : Prop,
   P \/ (Q /\ R) <-> (P \/ Q) /\ (P \/ R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split.
+  - intros [hp | [hq hr]].
+     + split.
+       * left. apply hp.
+       * left. apply hp.
+     + split.
+       * right. apply hq.
+       * right. apply hr.
+  - intros H. destruct H. destruct H.
+    + left. apply H.
+    + destruct H0.
+      * left. apply H0.
+      * right. split.
+        apply H.
+        apply H0.
+Qed.
 (** [] *)
 
 (** Some of Coq's tactics treat [iff] statements specially, avoiding
@@ -672,7 +692,10 @@ Proof.
 Theorem dist_not_exists : forall (X:Type) (P : X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold not. intros H1.
+  destruct H1 as [x' Hx'].
+  apply Hx'. apply H.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (dist_exists_or)  *)
@@ -682,7 +705,14 @@ Proof.
 Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
   (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
 Proof.
-   (* FILL IN HERE *) Admitted.
+   intros. split.
+   - intros. inversion H. destruct H0 as [HL | HR].
+     + left. exists x. apply HL.
+     + right. exists x. apply HR.
+   - intros. destruct H as [HL | HR].
+     + inversion HL. exists x. left. apply H.
+     + inversion HR. exists x. right. apply H.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -764,14 +794,47 @@ Lemma In_map_iff :
     In y (map f l) <->
     exists x, f x = y /\ In x l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l as [|h t IHt].
+  - simpl. split.
+    + intros. inversion H.
+    + intros. inversion H. inversion H0. apply H2.
+  - split.
+    + intros [H|H].
+      * exists h. split.
+        -- apply H.
+        -- left. reflexivity.
+      * apply IHt in H. inversion H. exists x. split.
+        -- apply H0.
+        -- right. apply H0.
+    + simpl. intros. inversion H. destruct H0. destruct H1. 
+      * rewrite <- H1 in H0. left. apply H0.
+      * inversion IHt. right. apply H3. exists x. split.
+        -- apply H0.
+        -- apply H1.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (In_app_iff)  *)
 Lemma In_app_iff : forall A l l' (a:A),
   In a (l++l') <-> In a l \/ In a l'.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A l l' a. 
+  induction l as [|h t IHt].
+  - simpl. split.
+    + intros H. right. assumption.
+    + intros [[]|H]. assumption.
+  - simpl. split. 
+    + intros [H|H]. 
+      * left. left. apply H.
+      * apply IHt in H. destruct H as [H1|H2].
+        { left; right; apply H1. }
+        { right; apply H2. }
+    + intros [[H|H]|H].
+      * left; apply H.
+      * right. rewrite IHt; left; apply H.
+      * right. rewrite IHt; right; apply H.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, recommended (All)  *)
