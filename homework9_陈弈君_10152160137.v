@@ -5,6 +5,7 @@
 Set Warnings "-notation-overridden,-parsing".
 Require Export IndProp.
 
+(* 1 *)
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof.
@@ -13,6 +14,7 @@ Proof.
   - apply le_S. apply IHle.
 Qed.
 
+(* 2 *)
 Theorem n_le_Sn : forall n, n <= S n.
 Proof. intros. apply le_S. apply le_n. Qed.
 
@@ -24,6 +26,7 @@ Proof.
   - apply le_trans with (n := S n). apply n_le_Sn. apply H1.
 Qed.
 
+(* 3 *)
 Theorem le_plus_l : forall a b,
   a <= a + b.
 Proof.
@@ -32,6 +35,7 @@ Proof.
   - simpl. apply n_le_m__Sn_le_Sm. apply IHa.
 Qed.
 
+(* 4 *)
 Theorem plus_lt : forall n1 n2 m,
   n1 + n2 < m ->
   n1 < m /\ n2 < m.
@@ -43,4 +47,12 @@ Proof.
   - induction H.
     + apply n_le_m__Sn_le_Sm. rewrite -> plus_comm. apply le_plus_l.
     + apply le_S. apply IHle.
+Qed.
+
+(* 5 *)
+Theorem lt_S : forall n m,
+  n < m ->
+  n < S m.
+Proof.
+  unfold lt. intros. apply le_S. apply H.
 Qed.
