@@ -43,7 +43,7 @@ Proof.
         -- left. reflexivity.
       * apply IHt in H. inversion H. exists x. split.
         -- apply H0.
-        -- right. apply H0.
+        -- simpl. right. apply H0.
     + simpl. intros. inversion H. destruct H0. destruct H1. 
       * rewrite <- H1 in H0. left. apply H0.
       * inversion IHt. right. apply H3. exists x. split.
