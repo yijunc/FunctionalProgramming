@@ -1462,8 +1462,9 @@ Proof.
     [nostutter]. *)
 
 Inductive nostutter {X:Type} : list X -> Prop :=
- (* FILL IN HERE *)
-.
+  | ns_nil : nostutter []
+  | ns_one : forall x, nostutter [x]
+  | ns_cons : forall x x' l, x <> x' /\ nostutter (x' :: l) -> nostutter (x :: x' :: l).
 (** Make sure each of these tests succeeds, but feel free to change
     the suggested proof (in comments) if the given one doesn't work
     for you.  Your definition might be different from ours and still
