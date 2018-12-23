@@ -1,0 +1,59 @@
+(*
+  10152160137 陈弈君 homeowork 11
+*)
+
+Set Warnings "-notation-overridden,-parsing".
+Require Export IndProp.
+Require Export Rel.
+
+(* 1 *)
+(** **** Exercise: 2 stars, optional (le_antisymmetric)  *)
+Theorem le_antisymmetric :
+  antisymmetric le.
+Proof.
+  intros a b LH RH. inversion LH as [ | a1 Hab ].
+  - reflexivity.
+  - assert (S a1 <= a1).
+    { 
+      apply le_trans with a.
+      rewrite -> H.
+      + assumption.
+      + assumption.
+    }
+    apply le_Sn_n in H0.
+    inversion H0.
+Qed.
+
+(* 2 *)
+(** **** Exercise: 2 stars, optional (le_step)  *)
+Theorem le_step : forall n m p,
+  n < m ->
+  m <= S p ->
+  n <= p.
+Proof.
+  intros n m p Hnm Hmp. unfold lt in Hnm.
+  assert (S n <= S p).
+  {
+    apply le_trans with m. 
+    - assumption.
+    - assumption.
+  }
+  apply le_S_n.
+  assumption.
+Qed.
+
+(* 3 *)
+(** **** Exercise: 2 stars, optional (rsc_trans)  *)
+Lemma rsc_trans :
+  forall (X:Type) (R: relation X) (x y z : X),
+      clos_refl_trans_1n R x y  ->
+      clos_refl_trans_1n R y z ->
+      clos_refl_trans_1n R x z.
+Proof.
+  intros X R  x y z Hxy Hyz.
+  induction Hxy as [x| x y y' Rxy Hyy].
+  - assumption.
+  - apply rt1n_trans with y.
+    + assumption.
+    + apply IHHyy in Hyz. apply Hyz.
+Qed.
