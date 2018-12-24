@@ -403,7 +403,13 @@ Lemma rsc_trans :
       clos_refl_trans_1n R y z ->
       clos_refl_trans_1n R x z.
 Proof.
-Admitted.
+  intros X R  x y z Hxy Hyz.
+  induction Hxy as [x| x y y' Rxy Hyy].
+  - assumption.
+  - apply rt1n_trans with y.
+    + assumption.
+    + apply IHHyy in Hyz. apply Hyz.
+Qed.
 (** [] *)
 
 (** Then we use these facts to prove that the two definitions of
