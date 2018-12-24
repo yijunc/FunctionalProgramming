@@ -248,7 +248,7 @@ Proof. try reflexivity. (* this just does [reflexivity] *) Qed.
 
 Theorem silly2 : forall (P : Prop), P -> P.
 Proof.
-  intros P HP.
+  intros P HP. 
   try reflexivity. (* just [reflexivity] would have failed *)
   apply HP. (* we can still finish the proof in some other way *)
 Qed.
@@ -407,7 +407,7 @@ Proof.
     a long list using repeat. *)
 
 Theorem In10 : In 10 [1;2;3;4;5;6;7;8;9;10].
-Proof.
+Proof. 
   repeat (try (left; reflexivity); right).
 Qed.
 
@@ -441,12 +441,26 @@ Qed.
     as elegant as possible. *)
 
 Fixpoint optimize_0plus_b (b : bexp) : bexp
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *)
+ :=   match b with
+  | BTrue => BTrue
+  | BFalse => BFalse
+  | BEq a1 a2 => BEq (optimize_0plus a1) (optimize_0plus a2)
+  | BLe a1 a2 => BLe (optimize_0plus a1) (optimize_0plus a2)
+  | BNot b1 => BNot (optimize_0plus_b b1)
+  | BAnd b1 b2 => BAnd (optimize_0plus_b b1) (optimize_0plus_b b2)
+  end.
 
 Theorem optimize_0plus_b_sound : forall b,
   beval (optimize_0plus_b b) = beval b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) 
+  intro b. induction b; 
+    try (simpl; reflexivity);
+     try (simpl; repeat (rewrite optimize_0plus_sound); reflexivity);
+     try (simpl; rewrite IHb; reflexivity).
+     simpl; rewrite IHb1; rewrite IHb2; reflexivity.
+Qed.  
 (** [] *)
 
 (** **** Exercise: 4 stars, optional (optimizer)  *)
@@ -563,10 +577,9 @@ Qed.
        like [apply c].
 
     We'll see examples as we go along. *)
-
-Example fool : 3 <= 20.
-Proof.
-  repeat constructor.
+Example foo1 : 3 <= 20.
+Proof. 
+repeat constructor.
 Qed.
 
 (* ################################################################# *)
@@ -753,14 +766,39 @@ Qed.
 (** Write a relation [bevalR] in the same style as
     [aevalR], and prove that it is equivalent to [beval].*)
 
-Inductive bevalR: bexp -> bool -> Prop :=
+(*Inductive bevalR: bexp -> bool -> Prop :=
 (* FILL IN HERE *)
-.
+*)
+Reserved Notation "e '//' b" (at level 55, left associativity).
+
+Inductive bevalR : bexp -> bool -> Prop :=
+  | E_BTrue : BTrue // true
+  | E_BFalse : BFalse // false
+  | E_BEq : forall (a1 a2 : aexp) (n1 n2 : nat),
+            a1 \\ n1 -> a2 \\ n2 -> (BEq a1 a2) // (beq_nat n1 n2)
+  | E_BLe : forall (a1 a2 : aexp) (n1 n2 : nat),
+            a1 \\ n1 -> a2 \\ n2 -> (BLe a1 a2) // (leb n1 n2)
+  | E_BNot : forall (b : bexp) (t : bool),
+            b // t -> (BNot b) // (negb t)
+  | E_BAnd : forall (b1 b2 : bexp) (t1 t2 : bool),
+            b1 // t1 -> b2 // t2 -> (BAnd b1 b2) // (andb t1 t2)
+
+where "e '//' b " := (bevalR e b) : type_scope.
+
 
 Lemma beval_iff_bevalR : forall b bv,
   bevalR b bv <-> beval b = bv.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) 
+  split.
+  - intros H; induction H; try (simpl; reflexivity);
+    try (simpl; apply aeval_iff_aevalR in H; apply aeval_iff_aevalR in H0;
+    rewrite H; rewrite H0; reflexivity);
+    try (simpl; subst; reflexivity).
+  - intro H. subst. induction b;
+    try (simpl; constructor;rewrite aeval_iff_aevalR; reflexivity);
+    simpl; repeat (constructor); assumption.
+Qed. 
 (** [] *)
 
 End AExp.
@@ -1328,7 +1366,12 @@ Example ceval_example2:
   (X ::= 0;; Y ::= 1;; Z ::= 2) / { --> 0 } \\
   { X --> 0 ; Y --> 1 ; Z --> 2 }.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) 
+  apply E_Seq with (t_update { --> 0} X 0).
+  - apply E_Ass. reflexivity.
+  - apply E_Seq with (t_update (t_update { --> 0} X 0) Y 1);
+    apply E_Ass; reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (pup_to_n)  *)
@@ -1338,13 +1381,34 @@ Proof.
    (this is trickier than you might expect). *)
 
 Definition pup_to_n : com
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *)
+  :=   WHILE BNot (BEq (AId X) (ANum 0)) DO
+    Y ::= APlus (AId Y) (AId X);;
+    X ::= AMinus (AId X) (ANum 1)
+  END.
 
 Theorem pup_to_2_ceval :
   pup_to_n / { X --> 2 }
      \\ { X --> 2 ; Y --> 0 ; Y --> 2 ; X --> 1 ; Y --> 3 ; X --> 0 }.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) 
+  apply E_WhileTrue with (t_update (t_update (t_update (t_update { --> 0 }
+      X 2) Y 0) Y 2) X 1).
+  - reflexivity.
+  - apply E_Seq with (t_update (t_update (t_update { -->0 } X 2) Y 0) Y 2).
+    + assert (H : t_update { -->0 } X 2 = t_update (t_update { -->0 } X 2) Y 0).
+      rewrite t_update_same; reflexivity.
+      rewrite <- H.    
+      apply E_Ass. simpl. apply t_update_eq.
+    + apply E_Ass; reflexivity.
+  - apply E_WhileTrue with (t_update
+  (t_update (t_update (t_update (t_update (t_update { -->0 } X 2) Y 0) Y 2) X 1) Y 3)
+  X 0).
+    + reflexivity. 
+    + apply E_Seq with (t_update (t_update (t_update (t_update (t_update { -->0 } X 2) Y 0) Y 2) X 1)
+     Y 3); apply E_Ass; reflexivity. 
+    + apply E_WhileFalse; reflexivity.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -1424,6 +1488,13 @@ Proof.
 (** State and prove a specification of [XtimesYinZ]. *)
 
 (* FILL IN HERE *)
+Theorem XtimesYinZ_spec : forall st st',
+  XtimesYinZ / st \\ st' ->
+  st' Z = (st X) * (st Y).
+Proof. intros st st' H.
+  inversion H. subst. clear H. simpl.
+  apply t_update_eq.
+Qed.
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_XtimesYinZ_spec : option (prod nat string) := None.
@@ -1442,7 +1513,12 @@ Proof.
       contradictory (and so can be solved in one step with
       [inversion]). *)
 
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *)
+   induction contra;
+   try (inversion Heqloopdef); try subst.
+   - inversion H.
+   - apply IHcontra2. reflexivity. 
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars (no_whiles_eqv)  *)
@@ -1469,12 +1545,37 @@ Fixpoint no_whiles (c : com) : bool :=
 
 Inductive no_whilesR: com -> Prop :=
  (* FILL IN HERE *)
+  | N_Skip : no_whilesR CSkip
+  | N_Ass : forall x a, no_whilesR (CAss x a)
+  | N_Seq : forall c1 c2, no_whilesR c1 -> no_whilesR c2 -> 
+                   no_whilesR (CSeq c1 c2)
+  | N_If : forall b c1 c2, no_whilesR c1 -> no_whilesR c2 -> 
+                   no_whilesR (CIf b c1 c2)
+  | N_While : forall b c, False ->
+                   no_whilesR (CWhile b c)
 .
 
 Theorem no_whiles_eqv:
    forall c, no_whiles c = true <-> no_whilesR c.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) 
+  induction c; split; intro H; try reflexivity; try (inversion H).
+  - apply N_Skip.
+  - apply N_Ass.
+  - apply andb_true_iff in H1.
+    apply N_Seq. 
+    + apply IHc1. tauto.
+    + apply IHc2. tauto.
+  - simpl. apply andb_true_iff. split.
+    + rewrite IHc1; assumption.
+    + rewrite IHc2; assumption.
+  - apply andb_true_iff in H1; destruct H1 as [H11 H12].
+    rewrite IHc1 in H11; rewrite IHc2 in H12. apply N_If; assumption.
+  - simpl. apply andb_true_iff. split.
+    + rewrite IHc1; assumption.
+    + rewrite IHc2; assumption.
+  - contradiction.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars (no_whiles_terminating)  *)
