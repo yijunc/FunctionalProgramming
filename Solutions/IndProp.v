@@ -75,6 +75,12 @@ Inductive ev : nat -> Prop :=
 | ev_0 : ev 0
 | ev_SS : forall n : nat, ev n -> ev (S (S n)).
 
+
+
+Inductive last (n:nat): list nat -> Prop :=
+| last_n : last n [n]
+| last_con : forall m l, last n l -> last n (m::l).
+
 (** This definition is different in one crucial respect from
     previous uses of [Inductive]: its result is not a [Type], but
     rather a function from [nat] to [Prop] -- that is, a property of
