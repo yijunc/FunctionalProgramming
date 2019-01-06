@@ -435,12 +435,18 @@ Qed.
 Theorem rev_app_distr: forall X (l1 l2 : list X),
   rev (l1 ++ l2) = rev l2 ++ rev l1.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l1 as [| h t IHt].
+  - simpl. rewrite app_nil_r. reflexivity.
+  - simpl. rewrite IHt. rewrite app_assoc. reflexivity.
+Qed.
 
-Theorem rev_involutive : forall X : Type, forall l : list X,
+Theorem rev_involutive : forall (X : Type) (l : list X),
   rev (rev l) = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l as [| h t IHt].
+  - reflexivity.
+  - simpl. rewrite rev_app_distr. rewrite IHt. reflexivity.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -521,8 +527,11 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
     given unit test. *)
 
 Fixpoint split {X Y : Type} (l : list (X*Y))
-               : (list X) * (list Y)
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+               : (list X) * (list Y) :=
+  match l with 
+  | nil => (nil, nil)
+  | (x, y) :: t => (x :: fst (split t), y :: snd (split t))
+  end.
 
 Example test_split:
   split [(1,false);(2,false)] = ([1;2],[false;false]).
@@ -573,7 +582,10 @@ Proof. reflexivity. Qed.
     passes the unit tests below. *)
 
 Definition hd_error {X : Type} (l : list X) : option X
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+  :=   match l with 
+  | nil => None
+  | h :: t => Some h 
+  end.
 
 (** Once again, to force the implicit arguments to be explicit,
     we can use [@] before the name of the function. *)
@@ -581,9 +593,9 @@ Definition hd_error {X : Type} (l : list X) : option X
 Check @hd_error.
 
 Example test_hd_error1 : hd_error [1;2] = Some 1.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_hd_error2 : hd_error  [[1];[2]]  = Some [1].
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -781,10 +793,21 @@ Proof. reflexivity.  Qed.
 (** Show that [map] and [rev] commute.  You may need to define an
     auxiliary lemma. *)
 
+Lemma map_distr : forall (X Y : Type) (f : X -> Y) (l1 l2 : list X),
+  map f (l1 ++ l2) = (map f l1) ++ (map f l2).
+Proof. intros X Y f l1 l2. induction l1 as [| h t IHt].
+  - reflexivity. 
+  - simpl. rewrite IHt. reflexivity.
+Qed.
+
 Theorem map_rev : forall (X Y : Type) (f : X -> Y) (l : list X),
   map f (rev l) = rev (map f l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  (* FILL IN HERE *) 
+  intros X Y f l. induction l as [| h t IHt].
+ - reflexivity.
+ - simpl. rewrite <- IHt. rewrite map_distr. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, recommended (flat_map)  *)
@@ -959,7 +982,7 @@ Proof. reflexivity. Qed.
 Theorem fold_length_correct : forall X (l : list X),
   fold_length l = length l.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros.
 (** [] *)
 
 (** **** Exercise: 3 stars (fold_map)  *)
