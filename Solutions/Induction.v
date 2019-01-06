@@ -241,7 +241,7 @@ Proof.
   (* FILL IN HERE *) 
   intro n. induction n as [| n' IHn'].
   - reflexivity.
-  - rewrite IHn'. rewrite negb_involutive.
+  - rewrite IHn'. rewrite negb_involutive. simpl.
     reflexivity.
 Qed.
 
@@ -562,7 +562,11 @@ Qed.
 Theorem mult_comm' : forall m n : nat,
   m * n = n * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction n as [|n IHn'].
+  - simpl. rewrite mult_0_r. reflexivity.
+  - induction m as [|m IHm'].
+    + simpl. rewrite mult_0_r. reflexivity.
+    + simpl.  Admitted.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (more_exercises)  *)

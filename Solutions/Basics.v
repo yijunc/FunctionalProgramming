@@ -1432,3 +1432,15 @@ Proof. simpl. reflexivity. Qed.
 Definition manual_grade_for_binary : option (prod nat string) := None.
 (** [] *)
 
+
+Fixpoint fibonacci (n:nat) : nat :=
+  match n with
+  |  O => 1
+  | (S n') =>
+       match n' with
+       |  O => 1
+       | (S n'') => (fibonacci n'') + (fibonacci n')
+       end
+  end.
+
+

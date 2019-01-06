@@ -91,7 +91,7 @@ Qed.
 
 Check @eq.
 (* ===> forall A : Type, A -> A -> Prop *)
-
+Check eq. 
 (** (Notice that we wrote [@eq] instead of [eq]: The type argument [A]
     to [eq] is declared as implicit, so we need to turn off implicit
     arguments to see the full type of [eq].) *)
@@ -155,7 +155,7 @@ Qed.
     that theorem, we can, apply [and_intro] to achieve the same effect
     as [split]. *)
 
-
+Check and_intro.
 Example and_example' : 3 + 4 = 7 /\ 2 * 2 = 4.
 Proof.
   apply and_intro.
@@ -181,8 +181,9 @@ Qed.
 Example conj_disj : forall A B C : Prop, 
   A /\ B -> C \/ B \/ C.
 Proof. (*Fill in here*)
-  intros A B C [HA HB].
-  right.  left. apply HB.
+  intros.
+  destruct H as [Ha Hb].
+  right.  left. apply Hb.
 Qed.
 (** [] *)
 
@@ -282,6 +283,7 @@ Proof.
     [HP : P], [HQ : Q], and [HR : R].  Finish the proof from
     there.) *)
 
+Check and.
 Theorem and_assoc : forall P Q R : Prop,
   P /\ (Q /\ R) -> (P /\ Q) /\ R.
 Proof.
@@ -619,7 +621,10 @@ Qed.
 Theorem iff_refl : forall P : Prop,
   P <-> P.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P. split.
+  - intros. apply H.
+  - intros. apply H.
+Qed.
 
 (* Touched on December 2, 2017 *)
 Theorem iff_trans : forall P Q R : Prop,
@@ -633,6 +638,7 @@ Qed.
 
 (** [] *) 
 
+Check or.
 (** **** Exercise: 3 stars (or_distributes_over_and)  *)
 Theorem or_distributes_over_and : forall P Q R : Prop,
   P \/ (Q /\ R) <-> (P \/ Q) /\ (P \/ R).
@@ -1434,6 +1440,7 @@ Proof. apply even_bool_prop. reflexivity. Qed.
 
 Infix "&&" := andb.
 Infix "||" := orb.
+
 
 Lemma andb_true_iff : forall b1 b2:bool,
   b1 && b2 = true <-> b1 = true /\ b2 = true.

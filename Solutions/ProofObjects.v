@@ -106,7 +106,7 @@ Check (ev_SS 2 (ev_SS 0 ev_0)).
     type [forall X, list X] expresses the fact that the constructor
     [nil] can be thought of as a function from types to empty lists
     with elements of that type. *)
-
+Check nil.
 (** We saw in the [Logic] chapter that we can use function
     application syntax to instantiate universally quantified variables
     in lemmas, as well as to supply evidence for assumptions that

@@ -203,7 +203,7 @@ Theorem ev_minus2 : forall n,
   ev n -> ev (pred (pred n)).
 Proof.
   intros n E.
-  destruct E as [| n' E'].
+  inversion E as [| n' E'].
   - (* E = ev_0 *) simpl. apply ev_0.
   - (* E = ev_SS n' E' *) simpl. apply E'.  Qed.
 
@@ -291,8 +291,10 @@ Theorem SSSSev__even : forall n,
   ev (S (S (S (S n)))) -> ev n.
 Proof.
   (* FILL IN HERE *)
-  intros n E. inversion E as [| _ [| n' E']].
-  apply E'.
+  intros n E. (* inversion E as [| _ [| n' E']]. *)
+  inversion E.
+  inversion H0.
+  apply H2.
 Qed.
 (** [] *)
 
@@ -649,7 +651,7 @@ Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
 Proof.
   (* FILL IN HERE *) 
   intros m n o E1 E2.
-  induction E2 as [ | o' E IHE].
+  induction E2 as [| o' E IHE].
   - apply E1. 
   - apply le_S. apply IHE.
 Qed.
@@ -1513,12 +1515,20 @@ End Pumping.
 Theorem beq_nat_refl : forall n : nat,
   true = beq_nat n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction n as [|n' IHn'].
+  - simpl. reflexivity.
+  - simpl. apply IHn'.
+Qed.
 
 Theorem beq_nat_true : forall n m,
     beq_nat n m = true -> n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+(*   intros n m. induction n as [| n' IHn'].
+  - intros. induction m as [|m IHm'].
+    + reflexivity.
+    + inversion H.
+  - apply IHn' with (n':= S n'). *)
+Admitted.
 
 Theorem beq_nat_true_iff : forall n1 n2 : nat,
   beq_nat n1 n2 = true <-> n1 = n2.
