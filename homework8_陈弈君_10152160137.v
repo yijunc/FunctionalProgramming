@@ -37,7 +37,7 @@ Proof.
     + intros. inversion H.
     + intros. inversion H. inversion H0. apply H2.
   - split.
-    + intros [H|H].
+    + intros. induction H as [H|H].
       * exists h. split.
         -- apply H.
         -- left. reflexivity.

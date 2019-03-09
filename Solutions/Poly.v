@@ -510,7 +510,7 @@ Compute (combine [1;2] [false;false;true;true]).
     Uncomment the material below and fill in the definition of
     [split].  Make sure it passes the given unit test. *)
 
-Fixpoint split {X Y : Type} (l : list (X*Y))
+Fixpoint  {X Y : Type} (l : list (X*Y))
                : (list X) * (list Y) :=
 (* FILL IN HERE *) 
   match l with 

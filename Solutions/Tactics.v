@@ -965,6 +965,7 @@ Proof.
     in which all occurrences of [e] (in the goal and in the context)
     are replaced by [c]. *)
 
+Search split.
 (** **** Exercise: 3 stars, optional (combine_split)  *)
 Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
   split l = (l1, l2) ->

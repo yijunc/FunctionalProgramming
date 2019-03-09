@@ -115,6 +115,8 @@ Qed.
 (** Show that the [empty_relation] that we defined earlier is a
     partial function. *)
 
+Check empty_relation.
+Print empty_relation.
 (* FILL IN HERE *)
 Theorem empty_relation_partial :
   partial_function empty_relation.
@@ -145,7 +147,8 @@ Proof.
 
 Definition transitive {X: Type} (R: relation X) :=
   forall a b c : X, (R a b) -> (R b c) -> (R a c).
-
+Print le.
+Check le.
 Theorem le_trans :
   transitive le.
 Proof.
@@ -240,7 +243,7 @@ Proof.
   (* FILL IN HERE *) intros n H.
   induction n as [|n' IHn'].
   - inversion H.
-  - apply IHn'. apply (le_S_n _ _ H).
+  - apply IHn'. apply le_S_n. apply H.
 Qed. 
 (** [] *)
 
@@ -351,6 +354,7 @@ Inductive clos_refl_trans {A: Type} (R: relation A) : relation A :=
           clos_refl_trans R y z ->
           clos_refl_trans R x z.
 
+Print clos_refl_trans_ind.
 (** For example, the reflexive and transitive closure of the
     [next_nat] relation coincides with the [le] relation. *)
 
@@ -418,7 +422,7 @@ Proof.
   intros X R x y z Hxy.
   induction Hxy.
   - intro H. apply H. 
-  - intro H'. apply IHHxy in H'.  ply rt1n_trans with y.
+  - intro H'. apply IHHxy in H'.  apply rt1n_trans with y.
     apply H. apply H'.
 Qed.
 (** [] *)

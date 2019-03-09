@@ -6,12 +6,13 @@ Set Warnings "-notation-overridden,-parsing".
 Require Export IndProp.
 
 (* 1 *)
+Print le.
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof.
   intros. induction H.
   - apply le_n.
-  - apply le_S. apply IHle.
+  - Print le. apply le_S. apply IHle.
 Qed.
 
 (* 2 *)

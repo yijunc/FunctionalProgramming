@@ -48,7 +48,7 @@ Proof.
     [induction] does automatically.
 
     Second, we do not introduce [n] into the context before applying
-    [nat_ind] -- the conclusion of [nat_ind] is a quantified formula,
+    [nat_ind] -- the conclusion  of [nat_ind] is a quantified formula,
     and [apply] needs this conclusion to exactly match the shape of
     the goal state, including the quantifier.  By contrast, the
     [induction] tactic works either with a variable in the context or
