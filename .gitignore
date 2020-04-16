@@ -1,4 +1,5 @@
-﻿*.vo
+﻿.DS_Store
+*.vo
 *.aux
 *.glob
 *.zip
